@@ -1,0 +1,5 @@
+service: () -> {
+    getNumberOfAttempts: () -> (text) query;
+    getSecretNumber: () -> (text) query;
+    getUserName: () -> (text) query;
+}
