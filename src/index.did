@@ -1,5 +1,4 @@
 service: () -> {
-    getNumberOfAttempts: () -> (text) query;
-    getSecretNumber: () -> (text) query;
-    getUserName: () -> (text) query;
+    doGuessNumber: (text) -> (text);
+    getScore: () -> (text) query;
 }
