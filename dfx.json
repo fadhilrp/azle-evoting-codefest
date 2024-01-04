@@ -1,0 +1,13 @@
+{
+    "canisters": {
+        "azle-evoting-codefest": {
+            "type": "custom",
+            "main": "src/index.ts",
+            "candid": "src/index.did",
+            "build": "npx azle azle-evoting-codefest",
+            "wasm": ".azle/azle-evoting-codefest/azle-evoting-codefest.wasm",
+            "gzip": true
+        }
+    }
+}
+
