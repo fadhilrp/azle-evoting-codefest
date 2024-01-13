@@ -1,47 +1,33 @@
-# azle-evoting-codefest
+# Lumivote
 
-Welcome to your first Azle project! This example project will help you to deploy your first canister (application) to the Internet Computer (IC) decentralized cloud. It is a simple getter/setter canister. You can always refer to [The Azle Book](https://demergent-labs.github.io/azle/) for more in-depth documentation.
+An IC-blockchain-based Evoting Web Application
 
-`dfx` is the tool you will use to interact with the IC locally and on mainnet. If you don't already have it installed:
+## Description
 
-```bash
-npm run dfx_install
-```
+For a national level voting system to be effective, it has to acquire the following criteria:
+- Integrity: only eligible voters can participate, and votes cannot be altered or deleted form the system.
+- Accessibility and availability: voters can remotely access the system to participate regardless their physical location at any time during the entire electoral period
+- Privacy: the voter choice should always remain anonymous during the election and post-election period
+- Transparency: the entire system should be auditable by the public, and voters can verify if their votes were casted and tallied
+- Affordability: the system has to be affordable for implement and maintain by the government, it should also be less expensive than the traditional paper ballots voting system.
 
-Next you will want to start a replica, which is a local instance of the IC that you can deploy your canisters to:
+Our 2 main features:
+- Voting platform (b2b, non b2g)
+- On-demand data provider. The system is that after we get a data request, we can hold a voting/survey program. Or if it's already been done before, we can use it, according to their request.
 
-```bash
-npm run replica_start
-```
+## Getting Started
 
-If you ever want to stop the replica:
+### Dependencies
 
-```bash
-npm run replica_stop
-```
-
-Now you can deploy your canister locally:
-
-```bash
-npm install
-npm run canister_deploy_local
-```
-
-To call the methods on your canister:
+- NodeJS 18.\* or higher https://nodejs.org/en/download/
+- Internet Computer dfx CLI https://internetcomputer.org/docs/current/developer-docs/setup/install/
 
 ```bash
-npm run canister_call_get_message
-npm run canister_call_set_message
+sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
-If you run the above commands and then call `npm run canister_call_get_message` you should see:
+### Installing
 
-```bash
-("Hello world!")
-```
-
-Assuming you have [created a cycles wallet](https://internetcomputer.org/docs/current/developer-docs/quickstart/network-quickstart) and funded it with cycles, you can deploy to mainnet like this:
-
-```bash
-npm run canister_deploy_mainnet
-```
+```Clone this Git repository on your local device:
+git clone https://github.com/FadhilRasyidin/azle-evoting-codefest/
+ ```
