@@ -1,59 +1,47 @@
-# simple_guessing_game
+# azle-evoting-codefest
 
-## Overview
+Welcome to your first Azle project! This example project will help you to deploy your first canister (application) to the Internet Computer (IC) decentralized cloud. It is a simple getter/setter canister. You can always refer to [The Azle Book](https://demergent-labs.github.io/azle/) for more in-depth documentation.
 
-The Number Guessing Game Canister is an interactive application that challenges users to guess a randomly generated number between 1 and 100. With a limited number of attempts and a scoring system, players aim to achieve the highest score by making accurate guesses. The game provides feedback on each attempt, guiding players to adjust their guesses until they either correctly identify the number or exhaust their attempts.
+`dfx` is the tool you will use to interact with the IC locally and on mainnet. If you don't already have it installed:
 
-## Functions
+```bash
+npm run dfx_install
+```
 
-Here is some functions that work in this app.
+Next you will want to start a replica, which is a local instance of the IC that you can deploy your canisters to:
 
-1. Function to guess the number (`doGuessNumber`).
-   Allows the user to make a guess for the randomly generated number. The game provides feedback on each guess, indicating whether the guess is too high, too low, or correct. The user's score is adjusted based on the number of attempts left.
+```bash
+npm run replica_start
+```
 
-   ```
-   const result = await doGuessNumber("50");
-   ```
+If you ever want to stop the replica:
 
-2. Function to get current score (`getScore`).
-   This function enables users to mark the attendance of a student by entering the presence code associated with a specific classroom.
+```bash
+npm run replica_stop
+```
 
-   ```
-   const result = await getScore();
-   ```
+Now you can deploy your canister locally:
 
-3. Function to game initialization and reset.
-   The game is initialized with a randomly generated number between 1 and 100. The reset function can be called to start a new game, resetting the number, attempts, and score.
+```bash
+npm install
+npm run canister_deploy_local
+```
 
-   - `generateNumber()`
-   - `setScoreByAttempt()`
-   - `reset()`
+To call the methods on your canister:
 
+```bash
+npm run canister_call_get_message
+npm run canister_call_set_message
+```
 
-## How to Use
+If you run the above commands and then call `npm run canister_call_get_message` you should see:
 
-You can run this project by running the following command:
+```bash
+("Hello world!")
+```
 
-1. Clone the repository.
- 
-    ```
-    git clone 
-    ```
+Assuming you have [created a cycles wallet](https://internetcomputer.org/docs/current/developer-docs/quickstart/network-quickstart) and funded it with cycles, you can deploy to mainnet like this:
 
-2. Install the dependencies.
-
-    ```
-    npm install
-    ```
-
-3. In the first terminal, start the `dfx` server.
-   ```
-   dfx start
-   ```
-
-4. In another terminal, deploy the app to start the web ui.
-    ```
-    dfx deploy
-    ```
-
-5. Open the URL that given from step 4 in your browser. Boom, you can access the presence app!
+```bash
+npm run canister_deploy_mainnet
+```
