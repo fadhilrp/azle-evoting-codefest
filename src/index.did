@@ -1,4 +1,8 @@
 service: () -> {
-    doGuessNumber: (text) -> (text);
-    getScore: () -> (text) query;
+    createCandidate: (text, int) -> (record {id:principal; natIdentificationNumber:int; citizenIds:vec principal; name:text});
+    readPolling: () -> (vec record {id:principal; name:text; count:int}) query;
+    readCandidates: () -> (vec record {id:principal; natIdentificationNumber:int; citizenIds:vec principal; name:text}) query;
+    createCitizenAndVote: (text, int, principal) -> (variant {Ok:record {id:principal; natIdentificationNumber:int; name:text; candidateId:principal}; Err:variant {CitizenDoesNotExist:principal; CandidateDoesNotExist:principal}});
+    readCitizens: () -> (vec record {id:principal; natIdentificationNumber:int; name:text; candidateId:principal}) query;
+    readCitizenById: (principal) -> (opt record {id:principal; natIdentificationNumber:int; name:text; candidateId:principal}) query;
 }

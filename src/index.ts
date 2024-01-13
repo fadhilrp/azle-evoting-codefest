@@ -1,62 +1,133 @@
-import { Canister, query, text, update, Void } from 'azle';
+import {
+    blob,
+    Canister,
+    ic,
+    Err,
+    nat64,
+    Ok,
+    Opt,
+    Principal,
+    query,
+    Record,
+    Result,
+    StableBTreeMap,
+    text,
+    update,
+    Variant,
+    Vec,
+    int
+} from 'azle';
 
-let guessNumber = '';
-let attemptLeft = 3;
-let score = 100;
+const Candidate = Record({
+    id: Principal,
+    natIdentificationNumber: int,
+    citizenIds: Vec(Principal),
+    name: text
+});
+type Candidate = typeof Candidate.tsType;
 
-const generateNumber = () => {
-    //rundom number 1 to 100
-    const num = Math.floor(Math.random() * 100) + 1;
-    guessNumber = num.toString();
-}
+const ResultPolling = Record({
+    id: Principal,
+    name: text,
+    count: int
+})
+type ResultPolling = typeof ResultPolling.tsType;
 
-const setScoreByAttempt = () => {
-    if(attemptLeft === 3) {
-        score -= 10;
-    }
-    else if(attemptLeft === 2) {
-        score -= 20;
-    }
-    else if(attemptLeft === 1) {
-        score -= 30;
-    }
-}
+const Citizen = Record({
+    id: Principal,
+    natIdentificationNumber: int,
+    name: text,
+    candidateId: Principal
+});
+type Citizen = typeof Citizen.tsType;
 
-const reset = () => {
-    attemptLeft = 3;
-    score = 100;
-    generateNumber();
+const DataError = Variant({
+    CitizenDoesNotExist: Principal,
+    CandidateDoesNotExist: Principal
+});
+type DataError = typeof DataError.tsType;
+
+let candidates = StableBTreeMap<Principal, Candidate>(0);
+let citizens = StableBTreeMap<Principal, Citizen>(1);
+let resultPollings = StableBTreeMap<Principal, ResultPolling>(2);
+// resultPollings = StableBTreeMap<Principal, ResultPolling>(2);
+
+function createPrincipal(name: string, natIdentificationNumber: number): Principal {
+    return Principal.fromText(`${name}-${natIdentificationNumber}-${ic.time()}`);
 }
 
 export default Canister({
-    doGuessNumber: update([text], text, (askNumber) => {
-        if(attemptLeft === 0) {
-            return 'You have no attempt left, the correct number is ' + guessNumber + '. Please start a new game';
-        }
-        if(askNumber === guessNumber) {
-            attemptLeft = 3;
-            return 'You win, yout score is ' + score.toString() + ' please start a new game';
-        }
-        else if(askNumber > guessNumber) {
-            attemptLeft--;
-            if(attemptLeft === 0) {
-                reset();
-                return 'You have no attempt left, the correct number is ' + guessNumber + '. Please start a new game';
-            }
-            setScoreByAttempt();
-            return 'That\'s too low, attempt left: ' + attemptLeft.toString() + ' score: ' + score.toString() + ' please try again';
-        }
-        else {
-            attemptLeft--;
-            if(attemptLeft === 0) {
-                reset();
-                return 'You have no attempt left, the correct number is ' + guessNumber + '. Please start a new game';
-            }
-            setScoreByAttempt();
-            return 'That\'s too high, attempt left: ' + attemptLeft.toString() + ' score: ' + score.toString() + ' please try again';
-        }
+    createCandidate: update([text, int], Candidate, (name, natIdentificationNumber) => {
+        const id = createPrincipal(name, Number(natIdentificationNumber)); // Convert bigint to number
+        const candidate: Candidate = {
+            id,
+            name,
+            natIdentificationNumber,
+            citizenIds: []
+        };
+        candidates.insert(candidate.id, candidate);
+        return candidate;
     }),
-    getScore: query([], text, () => {
-        return `Your score is ${score}`;
+    readPolling: query([], Vec(ResultPolling), () => {
+        // resultPollings.clear();
+
+        for (const candidate of candidates.values()) {
+            const result: ResultPolling = {
+                id: candidate.id,
+                name: candidate.name,
+                count: BigInt(candidate.citizenIds.length)
+            };
+            resultPollings.insert(candidate.id, result);
+        }
+        return resultPollings.values();
+    }),
+    readCandidates: query([], Vec(Candidate), () => {
+        return candidates.values();
+    }),
+    createCitizenAndVote: update(
+        [text, int, Principal],
+        Result(Citizen, DataError),
+        (name, natIdentificationNumber, candidateId) => {
+            const candidateOpt = candidates.get(candidateId);
+
+            if ('None' in candidateOpt) {
+                return Err({
+                    CandidateDoesNotExist: candidateId
+                });
+            }
+
+            const candidate = candidateOpt.Some;
+
+            const id = createPrincipal(name, Number(natIdentificationNumber));
+            const citizen: Citizen = {
+                id,
+                name,
+                natIdentificationNumber,
+                candidateId
+            };
+
+            if ('Some' in citizens.get(id)) {
+                return Err({
+                    CitizenDoesNotExist: id
+                });
+            }
+
+            citizens.insert(citizen.id, citizen);
+
+            const updatedCandidate: Candidate = {
+                ...candidate,
+                citizenIds: [...candidate.citizenIds, citizen.id]
+            };
+
+            candidates.insert(updatedCandidate.id, updatedCandidate);
+
+            return Ok(citizen);
+        }
+    ),
+    readCitizens: query([], Vec(Citizen), () => {
+        return citizens.values();
+    }),
+    readCitizenById: query([Principal], Opt(Citizen), (id) => {
+        return citizens.get(id);
     }),
 });
