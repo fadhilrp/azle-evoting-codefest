@@ -1,6 +1,8 @@
 # Lumivote
 
 An IC-blockchain-based Evoting Web Application
+<img width="836" alt="image" src="https://github.com/FadhilRasyidin/azle-evoting-codefest/assets/73109893/817dbc90-44ac-4b04-a6ba-024832d68e6a">
+
 
 ## Description
 
